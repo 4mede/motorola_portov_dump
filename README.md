@@ -1,0 +1,14 @@
+# user 15 V2VT35.34V-28-ST13.2 c13fb release-keys
+- manufacturer: motorola
+- platform: parrot
+- codename: portov
+- flavor: user
+- release: 15
+- id: V2VT35.34V-28-ST13.2
+- incremental: c13fb
+- tags: release-keys
+- fingerprint: motorola/portov/portov:15/V2VT35.34V-28-ST13.2/c13fb:user/release-keys
+- is_ab: true
+- brand: motorola
+- branch: user-15-V2VT35.34V-28-ST13.2-c13fb-release-keys
+- repo: motorola_portov_dump
