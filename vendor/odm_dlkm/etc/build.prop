@@ -1,0 +1,21 @@
+####################################
+# from generate-common-build-props
+# These properties identify this partition image.
+####################################
+ro.product.odm_dlkm.brand=motorola
+ro.product.odm_dlkm.device=portov
+ro.product.odm_dlkm.manufacturer=motorola
+ro.product.odm_dlkm.model=portov
+ro.product.odm_dlkm.name=portov
+ro.odm_dlkm.build.date=Fri Nov 21 19:46:08 UTC 2025
+ro.odm_dlkm.build.date.utc=1763754368
+ro.odm_dlkm.build.fingerprint=motorola/portov/portov:15/V2VT35.34V-28-ST13.2/c13fb:user/release-keys
+ro.odm_dlkm.build.id=V2VT35.34V-28-ST13.2
+ro.odm_dlkm.build.tags=release-keys
+ro.odm_dlkm.build.type=user
+ro.odm_dlkm.build.version.incremental=c13fb
+ro.odm_dlkm.build.version.release=15
+ro.odm_dlkm.build.version.release_or_codename=15
+ro.odm_dlkm.build.version.sdk=35
+# end of file
+
