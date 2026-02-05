@@ -1,0 +1,55 @@
+<!--
+    Input:
+        vendor/dolby/dax312/ds/service/aidl/impl/dax_framework_compatibility_matrix_aidl.xml
+        vendor/moto/portov/moto_fw_product_compatibility_matrix.xml
+        vendor/moto/portov/framework_compatibility_matrix_IMoto_Fingerprint.xml
+        device/moto/common/audioradar/audioradar_compatibility_matrix.xml
+-->
+<compatibility-matrix version="8.0" type="framework">
+    <hal format="aidl" optional="true">
+        <name>android.hardware.biometrics.fingerprint</name>
+        <version>1-3</version>
+        <interface>
+            <name>IFingerprint</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>com.motorola.hardware.biometric.fingerprint</name>
+        <version>2</version>
+        <interface>
+            <name>IMotoFingerPrint</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>com.motorola.hardware.camera.postprocess</name>
+        <interface>
+            <name>IPostProcService</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl" optional="true">
+        <name>motorola.hardware.audio.radar</name>
+        <version>1.0</version>
+        <interface>
+            <name>IAudioRadar</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="aidl" optional="true">
+        <name>vendor.dolby.dms</name>
+        <interface>
+            <name>IDms</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl" optional="true">
+        <name>vendor.trustonic.alps.alps_device</name>
+        <version>1.1</version>
+        <interface>
+            <name>IAlps</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+</compatibility-matrix>
