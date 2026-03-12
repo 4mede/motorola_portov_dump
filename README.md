@@ -1,0 +1,14 @@
+# user 16 VVT35HV-W1-ST20 af0001 release-keys
+- manufacturer: motorola
+- platform: parrot
+- codename: portov
+- flavor: user
+- release: 16
+- id: VVT35HV-W1-ST20
+- incremental: af0001
+- tags: release-keys
+- fingerprint: motorola/portov/portov:15/VVT35HV-W1-ST20/af0001:user/release-keys
+- is_ab: true
+- brand: motorola
+- branch: user-16-VVT35HV-W1-ST20-af0001-release-keys
+- repo: motorola_portov_dump
