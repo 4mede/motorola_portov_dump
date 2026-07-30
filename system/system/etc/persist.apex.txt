@@ -1,2 +1,0 @@
-# persist partition apex allowlist
-com.motorola.modules.factorycustomization
