@@ -1,0 +1,14 @@
+# user 16 VVT35HV-W1-ST20.2 3b779 release-keys
+- manufacturer: motorola
+- platform: parrot
+- codename: portov
+- flavor: user
+- release: 16
+- id: VVT35HV-W1-ST20.2
+- incremental: 3b779
+- tags: release-keys
+- fingerprint: motorola/portov/portov:15/VVT35HV-W1-ST20.2/3b779:user/release-keys
+- is_ab: true
+- brand: motorola
+- branch: user-16-VVT35HV-W1-ST20.2-3b779-release-keys
+- repo: motorola_portov_dump
