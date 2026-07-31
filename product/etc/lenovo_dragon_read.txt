@@ -1,0 +1,3 @@
+{
+"channel" : "novel_lenovo2025_635_yz1"
+}

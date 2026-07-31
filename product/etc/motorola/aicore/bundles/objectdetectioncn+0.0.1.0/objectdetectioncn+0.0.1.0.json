@@ -1,0 +1,1 @@
+{"name": "objectdetectioncn", "version": "0.0.1.0", "manifest_version": "0.2.0.0", "key_version": 0, "binaries": [{"name": "model.onnx", "version": "0.0.1.0", "size": 24422594, "hash": "333c579dc81eeecac0e1d0c6cb5b1e65adc5558c010f3983a261ad2fdca64de8", "encrypted": false}]}

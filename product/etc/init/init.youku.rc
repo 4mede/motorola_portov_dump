@@ -1,0 +1,3 @@
+on boot
+    setprop ro.channelid.youku bea395193b4ecec3
+    setprop ro.pid.youku 1636017556595

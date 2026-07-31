@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <backup-transport-whitelisted-service service="com.motorola.cn.devicemigration/com.motorola.cn.migrate.brcore.transport.MoverTransportService" />
+</config>

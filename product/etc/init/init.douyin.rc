@@ -1,0 +1,2 @@
+on boot
+    setprop ro.com.ss.android.ugc.aweme product/etc/preinstall/lenovo_aweme_183_pre_install.config

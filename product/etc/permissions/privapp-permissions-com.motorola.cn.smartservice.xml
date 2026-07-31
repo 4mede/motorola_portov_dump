@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<permissions>
+     <privapp-permissions package="com.motorola.cn.smartservice">
+        <!-- Used to start other app from smartservice -->
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
+        <!-- Used to start recommend apps for clone user -->
+        <permission name="android.permission.INTERACT_ACROSS_USERS" />
+    </privapp-permissions>
+</permissions>

@@ -1,0 +1,2 @@
+on boot
+    setprop com.dragon.read novel_lenovo2025_635_yz1

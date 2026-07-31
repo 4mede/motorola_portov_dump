@@ -1,0 +1,22 @@
+{
+  "rules_train": [
+	{
+        "rule": "[【|[]携程[]|】].*改签成功(.*)，([0-9]{1,2}月[0-9]{1,2}日) ([0-9]{2}:[0-9]{2})[,|，]([C|D|G|K|L|N|T|X|Y|Z]\\d{1,4})(.*)-(.*)",
+        "keys": ["rebooking", "people", "departDate", "departTime", "number", "fromStation", "toStation"]
+	},
+	{
+        "rule": "[【|[]12306[]|】](.*)购票成功，([0-9]{1,2}月[0-9]{1,2}日)([CDGKLNTXYZ]{0,1}[0-9]+)次，(.*?站)\\s*([0-9]{2}:[0-9]{2})开。详[见|情].*",
+        "keys": ["booking", "people", "departDate", "number", "fromStation", "departTime"]
+	},
+	{
+        "rule": "[【|[]12306[]|】](.*)改签成功，([0-9]{1,2}月[0-9]{1,2}日)([CDGKLNTXYZ]{0,1}[0-9]+)次，(.*?站)\\s*([0-9]{2}:[0-9]{2})开。详[见|情].*",
+        "keys": ["rebooking", "people", "departDate", "number", "fromStation", "departTime"]
+	}
+  ],
+  "rules_flight": [
+	{
+		"rule": "[【|[]携程[]|】]已出票.*相关手续，(.*航空)([A-Z]{2}[0-9]*)(.*)-(.*)([0-9]{1,2}月[0-9]{1,2}日)([0-9]{1,2}:[0-9]{2})-([0-9]{1,2}:[0-9]{2})",
+		"keys": ["booking", "airline", "number", "fromStation", "toStation", "departDate", "departTime", "arriveTime"]
+	}
+  ]
+}

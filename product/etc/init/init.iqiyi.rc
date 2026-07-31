@@ -1,0 +1,2 @@
+on boot
+    setprop ro.channel.com.qiyi.video 211650069ed2e71046d1cc7d9c54d341

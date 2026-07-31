@@ -1,0 +1,1434 @@
+<templates>
+    <slots>
+        <!-- 定义基本槽 -->
+        <slot name="从" synx="从"/>
+        <slot name="到" synx="到|至"/>
+        <slot name="的" synx="的"/>
+        <slot name="每" synx="每"/>
+        <slot name="个" synx="个"/>
+        <slot name="初" synx="初|开始"/>
+        <slot name="底" synx="底|末"/>
+        <slot name="和" synx="和|还有|跟"/>
+
+        <slot name="农历" synx="农历|阴历"/>
+        
+        <slot name="天" synx="天|日"/>
+        <slot name="隔" synx="隔"/>
+        <slot name="点钟" synx="小时|点钟"/>
+        <slot name="个" synx="个"/>
+        <slot name="之内" synx="之内|以内|内"/>
+        <slot name="未来" synx="接下来|未来|最近|近|这"/>
+        <slot name="最近" synx="接下来|最近|近|这"/>
+        <slot name="再过" synx="再过|过"/>
+        
+        <slot name="年" synx="年份|年"/>
+        <slot name="月" synx="月份|月"/>
+        <slot name="日" synx="日|号"/>
+        <slot name="时" synx="点钟|点|时"/>
+        <slot name="分" synx="分钟|分"/>
+        <slot name="秒" synx="秒钟|秒"/>
+        <slot name="周" synx="周|星期|礼拜"/>
+
+        <slot name="小时" synx="小时"/>
+        <slot name="分钟" synx="分钟"/>
+        <slot name="秒钟" synx="秒钟"/>
+
+        <!-- 定义属性槽 -->
+        <slot name="nowtime" group="nowtime" synx="?<nowtime>(现在|此时此刻|当前)"/>
+        <slot name="period" group="period" dict="data/template/period" synx="?<period>"/>
+        <slot name="season" group="season" dict="data/template/season" synx="?<season>"/>
+        <slot name="range" group="range" dict="data/template/range" synx="?<range>"/>
+        <slot name="sign" group="sign" dict="data/template/sign" synx="?<sign>"/>
+        <slot name="number" group="number" synx="?<number>(\d)+"/>
+        <slot name="otherNumber" group="otherNumber" synx="?<otherNumber>(\d)+"/>
+        <slot name="year" group="year" synx="?<year>(10|1|2)(0|1|2|3|4|5|6|7|8|9){3}"/>
+        <slot name="month" group="month" synx="?<month>((0)?(1|2|3|4|5|6|7|8|9))|(10|11|12)"/>
+        <slot name="day" group="day" synx="?<day>((0|1|2)?(0|1|2|3|4|5|6|7|8|9))|(30|31)"/>
+        <slot name="hour" group="hour" synx="?<hour>((0|1)?(0|1|2|3|4|5|6|7|8|9))|(2(0|1|2|3))"/>
+        <slot name="hour_24" group="hour_24" synx="?<hour_24>(24)"/>
+        <slot name="minute" group="minute" synx="?<minute>(0|1|2|3|4|5)?(0|1|2|3|4|5|6|7|8|9)(?!\d|秒)"/>
+        <slot name="second" group="second" synx="?<second>(0|1|2|3|4|5)?(0|1|2|3|4|5|6|7|8|9)"/>
+        <slot name="week" group="week" synx="?<week>(1|2|3|4|5|6|7)"/>
+        <slot name="festival" group="festival" dict="data/template/festival" synx="?<festival>"/>
+        <slot name="otherRange" group="otherRange" dict="data/template/range" synx="?<otherRange>"/>
+        <slot name="otherYear" group="otherYear" synx="?<otherYear>(1|2)(0|1|2|3|4|5|6|7|8|9){3}"/>
+        <slot name="otherMonth" group="otherMonth" synx="?<otherMonth>((0)?(1|2|3|4|5|6|7|8|9))|(10|11|12)"/>
+        <slot name="otherDay" group="otherDay" synx="?<otherDay>((0|1|2)?(0|1|2|3|4|5|6|7|8|9))|(30|31)"/>
+        <slot name="otherHour" group="otherHour" synx="?<otherHour>((0|1)?(0|1|2|3|4|5|6|7|8|9))|(2(0|1|2|3))"/>
+        <slot name="otherMinute" group="otherMinute" synx="?<otherMinute>(0|1|2|3|4|5)?(0|1|2|3|4|5|6|7|8|9)"/>
+        <slot name="otherSecond" group="otherSecond" synx="?<otherSecond>(0|1|2|3|4|5)?(0|1|2|3|4|5|6|7|8|9)"/>
+        <slot name="otherWeek" group="otherWeek" synx="?<otherWeek>(1|2|3|4|5|6|7)"/>
+        <slot name="otherPeriod" group="otherPeriod" dict="data/template/period" synx="?<otherPeriod>"/>
+        <slot name="errorNum" group="errorNum" synx="((零|元|一|二|两|三|四|五|六|七|八|九|十|百|千)+)|(\d)+"/>
+        <slot name="errorWeek" group="errorNum" synx="((零|一|二|三|四|五|六|七|八|九|十|百|千)+?)|(\d)+?"/>
+    </slots>
+
+    <!--################################### 定义解析模板 ###################################-->
+
+    <!--################################### 以年开头 ###################################-->
+    <template id="TIME_YEAR">
+        <example>2010年</example>
+        <example>今年</example>
+        <pattern level="Year">(【year】|【range】)【年】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-01-01,@year-12-31"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_BEGIN">
+        <example>年初</example>
+        <pattern level="Year">(【range】|【year】)?【年】+【初】(【的】?【period】【的】?)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-01-01,@year-01-01"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"flag":["S U U S S S S S,S U U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_BEGIN_24">
+        <example>年初</example>
+        <pattern level="Year">(【range】|【year】)?【年】+【初】(【的】?【period】【的】?)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-01-01,@year-01-01"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"flag":["S U U S S S S S,S U U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_END">
+        <example>年末</example>
+        <pattern level="Year">(【range】|【year】)?【年】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-12-31,@year-12-31"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"flag":["S U U S S S S S,S U U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_END_24">
+        <example>年末</example>
+        <pattern level="Year">(【range】|【year】)?【年】+【底】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-12-31,@year-12-31"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"flag":["S U U S S S S S,S U U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_YEAR_END_ERROR">
+        <example>年末</example>
+        <pattern level="Year_Error">(【range】|【year】)【年】【的】?【period】</pattern>
+        <pattern level="Year_Error">(【range】|【year】)【年】【的】?【period】?(【的】?【errorNum】【时】(【的】?【errorNum】【分】?)?(【errorNum】【秒】?)?)</pattern>
+        <pattern level="Year_Error">(【range】|【year】)?【年】+(【底】|【初】)(【的】?【period】)?(【的】?【errorNum】【时】)?(【的】?【errorNum】【分】?)?(【errorNum】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_MONTH">
+        <example>2010年8月</example>
+        <example>今年8月</example>
+        <pattern level="Year">(【year】|【range】)【年】【的】?【month】【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-01,@year-@month-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_MONTH_ERROR">
+        <example>2010年13月</example>
+        <pattern level="Year_Error">(【农历】【的】?)?(【year】|【range】)【年】【的】?【errorNum】【月】</pattern>
+        <pattern level="Year_Error">(【year】|【range】)【年】【的】?【农历】【的】?【errorNum】【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_LUNAR_MONTH">
+        <example>农历2010年8月</example>
+        <example>今年农历8月</example>
+        <pattern level="Year">【农历】【的】?(【year】|【range】)【年】【的】?【month】【月】</pattern>
+        <pattern level="Year">(【year】|【range】)【年】【的】?【农历】【的】?【month】【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","lunar":["@year-@month-01,@year-@month-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_MONTH_BEGIN">
+        <example>今年8月初</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【month】【月】+【初】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-@month-01,@year-@month-01"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_MONTH_BEGIN_24">
+        <example>今年8月初</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【month】【月】+【初】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-@month-01,@year-@month-01"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_LUNAR_MONTH_BEGIN">
+        <example>今年农历8月初</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【农历】【的】?【month】【月】+【初】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <pattern level="Year">【农历】【的】?(【range】|【year】)【年】【的】?【month】【月】+【初】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@year-@month-01,@year-@month-01"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_LUNAR_MONTH_BEGIN_24">
+        <example>今年农历8月初</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【农历】【的】?【month】【月】+【初】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <pattern level="Year">【农历】【的】?(【range】|【year】)【年】【的】?【month】【月】+【初】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@year-@month-01,@year-@month-01"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_MONTH_END">
+        <example>今年8月末</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【month】【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-@month-@relativeDays,@year-@month-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_MONTH_END_24">
+        <example>今年8月末</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【month】【月】+【底】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-@month-@relativeDays,@year-@month-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_LUNAR_MONTH_END">
+        <example>农历今年8月末</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【农历】【的】?【month】【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <pattern level="Year">【农历】【的】?(【range】|【year】)【年】【的】?【month】【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@year-@month-@relativeDays,@year-@month-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_LUNAR_MONTH_END_24">
+        <example>农历今年8月末</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【农历】【的】?【month】【月】+【底】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <pattern level="Year">【农历】【的】?(【range】|【year】)【年】【的】?【month】【月】+【底】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@year-@month-@relativeDays,@year-@month-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_MONTH_DAY">
+        <example>2010年8月3号</example>
+        <example>今年8月3号</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【month】【月】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】)?(【的】?【second】【秒】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-@month-@day,@year-@month-@day"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_MONTH_DAY_24">
+        <example>2010年8月3号</example>
+        <example>今年8月3号</example>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【month】【月】【的】?【day】【日】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@year-@month-@day,@year-@month-@day"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_LUNAR_MONTH_DAY">
+        <example>农历2010年8月3号</example>
+        <pattern level="Year">【农历】【的】?(【range】|【year】)【年】【的】?【month】【月】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【农历】【的】?【month】【月】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <pattern level="Year">【农历】?(【range】|【year】)【年】【的】?【农历】?【month】+【月】+【的】?【初】【day】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@year-@month-@day,@year-@month-@day"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_LUNAR_MONTH_DAY_24">
+        <example>农历2010年8月3号</example>
+        <pattern level="Year">【农历】【的】?(【range】|【year】)【年】【的】?【month】【月】【的】?【day】【日】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <pattern level="Year">(【range】|【year】)【年】【的】?【农历】【的】?【month】【月】【的】?【day】【日】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <pattern level="Year">【农历】?(【range】|【year】)【年】【的】?【农历】?【month】+【月】+【的】?【初】【day】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@year-@month-@day,@year-@month-@day"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_FESTIVAL">
+        <example>今年中秋节上午8点</example>
+        <example>2010年中秋节的晚上8点30分</example>
+        <pattern level="Year">((【range】|【year】)【年】【的】?)【festival】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@nowMonth-@nowDay,@year-@nowMonth-@nowDay"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"festival":["@festival,@festival"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_YEAR_SIGN">
+        <example>3年前</example>
+        <pattern level="Year">【number】【年】【sign】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["@sign@number 0 0 0 0 0 0 0,@sign@number 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_YEAR_SIGN_LATER">
+        <example>再过3年</example>
+        <pattern level="Year">【再过】【number】【年】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["@number 0 0 0 0 0 0 0,@number 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_POINT_NUMBER_YEAR_INCLUDE">
+        <example>3年之内</example>
+        <pattern level="Year">【number】【年】【之内】</pattern>
+        <pattern level="Year">【最近】【number】【年】【之内】?</pattern>
+        <pattern level="Year">【未来】【number】【年】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 0 0 0 0 0 0,(@number-1) 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR">
+        <example>每年</example>
+        <pattern level="Year">【每】【年】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","repeat_level":"year"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_MONTH">
+        <example>每年8月</example>
+        <pattern level="Year">【每】【年】【的】?【month】【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-01,****-@month-@relativeDays"],"repeat_level":"year"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_MONTH_DAY">
+        <example>每年8月3号</example>
+        <pattern level="Year">【每】【年】【的】?【month】【月】【的】?【day】【日】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-@day,****-@month-@day"],"repeat_level":"year"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_MONTH_MONTH2">
+        <example>每年8月到9月</example>
+        <pattern level="Year">【从】?【每】【年】【的】?【month】【月】【到】【otherMonth】【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-01,****-@otherMonth-@relativeDays"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_MONTH_DAY_MONTH2_DAY2">
+        <example>每年8月3号到9月2号</example>
+        <pattern level="Year">【从】?【每】【年】【的】?【month】【月】【的】?【day】【日】【到】【otherMonth】【月】【的】?【otherDay】【日】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-@day,****-@otherMonth-@otherDay"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_MONTH_DAY_DAY2">
+        <example>每年8月3号到4号</example>
+        <pattern level="Year">【从】?【每】【年】【的】?【month】【月】【的】?【day】【日】【到】【otherDay】【日】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-@day,****-@month-@otherDay"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_MONTH_DAY_HOUR">
+        <example>每年8月3号8点30分</example>
+        <pattern level="Year">【每】【年】【的】?【month】【月】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】(【minute】【分】?)?(【second】【秒】?)?)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-@day,****-@month-@day"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"],"repeat_level":"year"}]]>
+        </semantic>
+    </template>
+    
+    <template id="TIME_LOOP_YEAR_MONTH_DAY_HOUR_24">
+        <example>每年8月3号8点30分</example>
+        <pattern level="Year">【每】【年】【的】?【month】【月】【的】?【day】【日】(【的】?【period】)?【的】?【hour】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-@day,****-@month-@day"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"],"repeat_level":"year"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_PERIOD_HOUR_ERROR">
+        <example>每年上午八点</example>
+        <pattern level="Year_Error">【每】【年】【的】?【period】</pattern>
+        <pattern level="Year_Error">【每】【年】(【的】?【period】)?【的】?【errorNum】【时】(【errorNum】【分】)?(【errorNum】【秒】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_MONTH_DAY_HOUR_HOUR2">
+        <example>每年8月3号8点到9点</example>
+        <pattern level="Year">【从】?【每】【年】【的】?【month】【月】【的】?【day】【日】【的】?【hour】【时】【到】【otherHour】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-@day,****-@month-@day"],"time":["@hour:00:00,@otherHour:00:00"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_YEAR_MONTH_DAY_HOUR_MINUTE_HOUR2_MINUTE2">
+        <example>每年8月3号8点30到9点40</example>
+        <pattern level="Year">【从】?【每】【年】【的】?【month】【月】【的】?【day】【日】【的】?【hour】【时】【minute】【分】?【到】【otherHour】【时】【otherMinute】【分】?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-@month-@day,****-@month-@day"],"time":["@hour:@minute:00,@otherHour:@otherMinute:00"]}]]>
+        </semantic>
+    </template>
+
+        <template id="TIME_LOOP_FESTIVAL">
+        <example>每年元旦</example>
+        <pattern level="Year">【每】【年】【的】?【festival】</pattern>
+        <pattern level="Year">【每】【个】【festival】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","festival":["@festival,@festival"],"date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_YEAR_RANGE_YEAR_RANGE2">
+        <example>今年到明年</example>
+        <example>2010年到2012年</example>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)【到】((【otherRange】|【otherYear】)【年】【的】?)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-01-01,@otherYear-12-31"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_RANGE_YEAR_MONTH_RANGE_MONTH_RANGE2">
+        <example>2010年8到9月</example>
+        <example>今年8月到9月</example>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)【month】【月】【到】((【otherRange】|【otherYear】)【年】【的】?)?【otherMonth】【月】</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)?【month】【月】【到】((【otherRange】|【otherYear】)【年】【的】?)【otherMonth】【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-01,@otherYear-@otherMonth-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_YEAR_MONTH_RANGE_MONTH_LUNAR">
+        <example>农历2010年8到9月</example>
+        <example>农历今年8月到9月</example>
+        <pattern level="Year">【从】?【农历】【的】?((【range】|【year】)【年】【的】?)【month】【月】【到】(【农历】【的】?)?((【otherRange】|【otherYear】)【年】【的】?)?【otherMonth】【月】</pattern>
+        <pattern level="Year">【从】?【农历】【的】?((【range】|【year】)【年】【的】?)?【month】【月】【到】(【农历】【的】?)?((【otherRange】|【otherYear】)【年】【的】?)【otherMonth】【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","lunar":["@year-@month-01,@otherYear-@otherMonth-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_RANGE_YEAR_MONTH_RANGE_MONTH_RANGE2_1">
+        <example>2010年8月初到9月初</example>
+        <example>今年8月初到9月初</example>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)【month】【月】+【初】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)?【otherMonth】【月】+【初】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)?【month】【月】+【初】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)【otherMonth】【月】+【初】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-01,@otherYear-@otherMonth-01"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_YEAR_MONTH_RANGE_MONTH_RANGE2_FUZZY_0">
+        <example>2010年8月末到9月末</example>
+        <example>今年8月末到9月末</example>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)【month】【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)?【otherMonth】【月】+【底】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)?【month】【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)【otherMonth】【月】+【底】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-@relativeDays,@otherYear-@otherMonth-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_YEAR_MONTH_RANGE_MONTH_RANGE2_FUZZY_1">
+        <example>2010年8月初到9月末</example>
+        <example>今年8月初到9月末</example>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)【month】【月】+【初】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)?【otherMonth】【月】+【底】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)?【month】【月】+【初】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)【otherMonth】【月】+【底】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-01,@otherYear-@otherMonth-@relativeDays"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_YEAR_MONTH_RANGE_MONTH_RANGE2_FUZZY_2">
+        <example>2010年8月末到9月初</example>
+        <example>今年8月末到9月初</example>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)【month】【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)?【otherMonth】【月】+【初】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)?【month】【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)【otherMonth】【月】+【初】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-@relativeDays,@otherYear-@otherMonth-01"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_YEAR_MONTH_RANGE_MONTH_RANGE2">
+        <example>2014年这个月到下个月</example>
+        <pattern level="Year">【从】?(【year】【年】【的】?)((【range】|【month】)【月】)【到】(【otherYear】【年】【的】?)?((【otherRange】|【otherMonth】)【月】)</pattern>
+        <pattern level="Year">【从】?(【year】【年】【的】?)?((【range】|【month】)【月】)【到】(【otherYear】【年】【的】?)((【otherRange】|【otherMonth】)【月】)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-01,@otherYear-@otherMonth-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_YEAR_MONTH_RANGE_MONTH_RANGE2_LUNAR">
+        <example>农历今年这个月到下个月</example>
+        <pattern level="Year">【从】?【农历】【的】?(【year】【年】【的】?)((【range】|【month】)【月】)【到】(【农历】【的】?)?(【otherYear】【年】【的】?)?((【otherRange】|【otherMonth】)【月】)</pattern>
+        <pattern level="Year">【从】?【农历】【的】?(【year】【年】【的】?)?((【range】|【month】)【月】)【到】(【农历】【的】?)?(【otherYear】【年】【的】?)((【otherRange】|【otherMonth】)【月】)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","lunar":["@year-@month-01,@otherYear-@otherMonth-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_RANGE_YEAR_DAY_RANGE_DAY_RANGE2">
+        <example>2010年8月3号到9月3号</example>
+        <example>今年8月3号到9月3号</example>
+        <example>今年8月3号到4号</example>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)(【month】【月】【的】?)?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)?(【otherMonth】【月】【的】?)?【otherDay】【日】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)?(【month】【月】【的】?)?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)(【otherMonth】【月】【的】?)?【otherDay】【日】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-@day,@otherYear-@otherMonth-@otherDay"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_RANGE_YEAR_MONTH_LUNAR_DAY">
+        <example>2014年这个月农历三号</example>
+        <pattern level="Year">(【year】【年】【的】?)(【range】【月】【的】?)?【农历】【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <pattern level="Year">(【year】【年】【的】?)(【range】【月】+【的】?)?【农历】?【初】【day】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","lunar":["@year-@nowMonth-@day,@year-@nowMonth-@day"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_YEAR_DAY_RANGE_DAY_RANGE2_LUNAR">
+        <example>农历2010年8月3号到9月3号</example>
+        <example>农历今年8月3号到9月3号</example>
+        <example>农历今年8月3号到4号</example>
+        <pattern level="Year">【从】?【农历】【的】?((【range】|【year】)【年】【的】?)(【month】【月】【的】?)?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【农历】【的】?)?((【otherRange】|【otherYear】)【年】【的】?)?(【otherMonth】【月】【的】?)?【otherDay】【日】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?【农历】【的】?((【range】|【year】)【年】【的】?)?(【month】【月】【的】?)?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【农历】【的】?)?((【otherRange】|【otherYear】)【年】【的】?)(【otherMonth】【月】【的】?)?【otherDay】【日】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","lunar":["@year-@month-@day,@otherYear-@otherMonth-@otherDay"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_POINT_DAY_RANGE_DAY_RANGE2">
+        <example>今年今天到9月8号</example>
+        <pattern level="Year">【从】?(【year】【年】【的】?)(【month】【月】【的】?)?((【range】|【day】)【天】)(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherYear】【年】【的】?)?(【otherMonth】【月】【的】?)?((【otherRange】|【otherDay】)【天】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?(【year】【年】【的】?)?(【month】【月】【的】?)?((【range】|【day】)【天】)(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherYear】【年】【的】?)(【otherMonth】【月】【的】?)?((【otherRange】|【otherDay】)【天】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-@day,@otherYear-@otherMonth-@otherDay"],"range":["0 0 @range 0 0 0 0 0,0 0 @otherRange 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_YEAR_DAY_RANGE_DAY_RANGE2_PERIOD">
+        <example>今年8月3号上午到下午</example>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)(【month】【月】【的】?)?(【day】【日】【的】?)?(【period】【的】?)(【hour】【时】【的】?)?(【minute】【分】?【的】?)?(【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)?(【otherMonth】【月】【的】?)?(【otherDay】【日】【的】?)?(【otherPeriod】【的】?)(【otherHour】【时】【的】?)?(【otherMinute】【分】?【的】?)?(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)(【month】【月】【的】?)?(【day】【日】【的】?)?(【period】【的】?)(【hour】【时】【的】?)?(【minute】【分】?【的】?)?(【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)?(【otherMonth】【月】【的】?)?(【otherDay】【日】【的】?)?(【otherPeriod】【的】?)?(【otherHour】【时】【的】?)(【otherMinute】【分】?【的】?)?(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)?(【month】【月】【的】?)?(【day】【日】【的】?)?(【period】【的】?)(【hour】【时】【的】?)?(【minute】【分】?【的】?)?(【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)(【otherMonth】【月】【的】?)?(【otherDay】【日】【的】?)?(【otherPeriod】【的】?)(【otherHour】【时】【的】?)?(【otherMinute】【分】?【的】?)?(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">【从】?((【range】|【year】)【年】【的】?)?(【month】【月】【的】?)?(【day】【日】【的】?)?(【period】【的】?)(【hour】【时】【的】?)?(【minute】【分】?【的】?)?(【second】【秒】?)?【到】((【otherRange】|【otherYear】)【年】【的】?)(【otherMonth】【月】【的】?)?(【otherDay】【日】【的】?)?(【otherPeriod】【的】?)?(【otherHour】【时】【的】?)(【otherMinute】【分】?【的】?)?(【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@month-@day,@otherYear-@otherMonth-@otherDay"],"range":["@range 0 0 0 0 0 0 0,@otherRange 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_YEAR_FESTIVAL_PERIOD">
+        <example>今年中秋节上午8点到晚上九点</example>
+        <pattern level="Year">((【range】|【year】)【年】【的】?)【festival】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?【到】【otherPeriod】(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">((【range】|【year】)【年】【的】?)【festival】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?【到】(【otherPeriod】)?(【的】?【otherHour】【时】)(【的】?【otherMinute】【分】?)?(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Year">((【range】|【year】)【年】【的】?)【festival】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?【到】(【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】)(【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@year-@nowMonth-@nowDay,@year-@nowMonth-@nowDay"],"range":["@range 0 0 0 0 0 0 0,@range 0 0 0 0 0 0 0"],"festival":["@festival,@festival"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <!--################################### 以节日开头 ###################################-->
+    <template id="TIME_FESTIVAL_WEEKEND">
+        <example>国庆七天</example>
+        <pattern level="Fes">【range】?【festival】【的】?【day】【天】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","festival":["@festival,@festival"],"range":["0 0 0 0 @range 0 0 0,0 0 0 0 @range 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_FESTIVAL">
+        <example>下个中秋节</example>
+        <pattern level="Fes">【range】?【festival】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","festival":["@festival,@festival"],"range":["0 0 0 0 @range 0 0 0,0 0 0 0 @range 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_FESTIVAL">
+        <example>每年元旦</example>
+        <pattern level="Fes">【每】【个】【festival】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","festival":["@festival,@festival"],"date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_FESTIVAL_PERIOD">
+        <example>中秋节上午8点到晚上九点</example>
+        <pattern level="Fes_Range">【range】?【festival】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?【到】【otherPeriod】(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Fes_Range">【range】?【festival】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?【到】【otherPeriod】?(【的】?【otherHour】【时】【的】?)(【otherMinute】【分】?)?(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Fes_Range">【range】?【festival】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?【到】【otherPeriod】?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】)(【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","range":["0 0 0 0 @range 0 0 0,0 0 0 0 @range 0 0 0"],"festival":["@festival,@festival"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <!--################################### 以月开头 ###################################-->
+    <template id="TIME_MONTH">
+        <example>下个月</example>
+        <example>8月</example>
+        <pattern level="Mon">(【month】|【range】)【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@month-01,@nowYear-@month-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_LUNAR_MONTH">
+        <example>农历下个月</example>
+        <example>农历8月</example>
+        <pattern level="Mon">【农历】【的】?(【month】|【range】)【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","lunar":["@nowYear-@month-01,@nowYear-@month-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_MONTH_ERROR">
+        <example>13月</example>
+        <pattern level="Mon_Error">(【农历】【的】?)?【errorNum】【月】</pattern>
+        <pattern level="Mon_Error">(【农历】【的】?)?(【errorNum】|【range】)【月】(【的】?【period】)?(【的】?【errorNum】【时】(【errorNum】【分】?)?(【errorNum】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_MONTH_DAY">
+        <example>8月3号</example>
+        <pattern level="Mon">(【month】|【range】)【月】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】(【minute】【分】?)?(【second】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@month-@day,@nowYear-@month-@day"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_MONTH_DAY_24">
+        <example>8月3号</example>
+        <pattern level="Mon">(【month】|【range】)【月】【的】?【day】【日】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@month-@day,@nowYear-@month-@day"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_MONTH_DAY_ERROR">
+        <example>13月33号</example>
+        <pattern level="Mon_Error">(【农历】【的】?)?(【errorNum】|【range】)【月】【的】?【errorNum】【日】(【的】?【period】)?(【的】?【errorNum】【时】)?(【的】?【errorNum】【分】?)?(【errorNum】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LUNAR_MONTH_DAY">
+        <example>农历8月3号</example>
+        <pattern level="Mon">【农历】【的】?(【month】|【range】)【月】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <pattern level="Mon">【农历】【的】?(【month】|【range】)【月】+【的】?【初】【day】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <pattern level="Mon">(【month】|【range】)【月】+【的】?【初】【day】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@nowYear-@month-@day,@nowYear-@month-@day"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+
+    <template id="TIME_LUNAR_MONTH_DAY_24">
+        <example>农历8月3号</example>
+        <pattern level="Mon">【农历】【的】?(【month】|【range】)【月】【的】?【day】【日】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <pattern level="Mon">【农历】【的】?(【month】|【range】)【月】+【的】?【初】【day】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <pattern level="Mon">(【month】|【range】)【月】+【的】?【初】【day】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@nowYear-@month-@day,@nowYear-@month-@day"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_MONTH_BEGIN">
+        <example>8月初</example>
+        <pattern level="Mon">(【month】|【range】)?【月】+【初】(【的】?【period】)?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@month-01,@nowYear-@month-01"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_MONTH_BEGIN_24">
+        <example>8月初</example>
+        <pattern level="Mon">(【month】|【range】)?【月】+【初】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@month-01,@nowYear-@month-01"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_MONTH_END">
+        <example>8月末</example>
+        <pattern level="Mon">(【month】|【range】)?【月】+【底】(【的】?【period】)?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@month-@relativeDays,@nowYear-@month-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_MONTH_END_24">
+        <example>8月末</example>
+        <pattern level="Mon">(【month】|【range】)?【月】+【底】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@month-@relativeDays,@nowYear-@month-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @range 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"flag":["S S U S S S S S,S S U S S S S S"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_MONTH_SIGN">
+        <example>3个月前</example>
+        <pattern level="Mon">【number】【个】?【月】【sign】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 @sign@number 0 0 0 0 0 0,0 @sign@number 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_MONTH_SIGN_LATER">
+        <example>再过3个月</example>
+        <pattern level="Mon">【再过】【number】【个】?【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 @number 0 0 0 0 0 0,0 @number 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_POINT_NUMBER_MONTH_INCLUDE">
+        <example>3个月之内</example>
+        <pattern level="Mon">【number】【个】?【月】【之内】</pattern>
+        <pattern level="Mon">【最近】【number】【个】?【月】【之内】?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 0 0 0 0 0 0,0 (@number-1) 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_POINT_NUMBER_MONTH_FUTURE">
+        <example>未来3个月</example>
+        <pattern level="Mon">【未来】【number】【个】?【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 0 0 0 0 0 0,0 @number 0 0 0 0 0 0"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH_DAY_ERROR">
+        <example>每月上午</example>
+        <pattern level="Mon_Error">【每】【个】?【月】【的】?【errorNum】【日】</pattern>
+        <pattern level="Mon_Error">【每】【个】?【月】【的】?【的】?【period】?(【的】?【errorNum】【时】(【errorNum】【分】?)?(【errorNum】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH_DAY">
+        <example>每月3号</example>
+        <pattern level="Mon">【每】【个】?【月】【的】?【day】【日】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-**-@day,****-**-@day"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH_BEGIN_HOUR">
+        <example>每月月初早上八点</example>
+        <pattern level="Mon">【每】【个】?【月】+【初】(【的】?【period】)?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-**-01,****-**-01"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH_DAY_DAY2_2">
+        <example>每月3号到6号</example>
+        <pattern level="Mon">【每】【个】?【月】【的】?【day】【日】【到】【otherDay】【日】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-**-@day,****-**-@otherDay"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH_DAY_HOUR">
+        <example>每月3号8点</example>
+        <pattern level="Mon">【每】【个】?【月】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-**-@day,****-**-@day"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_LOOP_MONTH_DAY_HOUR_24">
+        <example>每月3号8点</example>
+        <pattern level="Mon">【每】【个】?【月】【的】?【day】【日】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-**-@day,****-**-@day"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH_DAY_HOUR_MINUTE">
+        <example>每月3号8点30分</example>
+        <pattern level="Mon">【每】】【个】?【月】【的】?【day】【日】【的】?【hour】【时】【minute】【分】?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-**-@day,****-**-@day"],"time":["@hour:@minute:00,@hour:@minute:00"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH_DAY_HOUR_HOUR2">
+        <example>每月3号8点到9点</example>
+        <pattern level="Mon">【每】【个】?【月】【的】?【day】【日】【的】?(【period】【的】?)?【hour】【时】【到】(【otherPeriod】【的】?)?【otherHour】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-**-@day,****-**-@day"],"time":["@hour:00:00,@otherHour:00:00"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH_DAY_HOUR_MINUTE_HOUR2_MINUTE2">
+        <example>每月3号8点30到9点40</example>
+        <pattern level="Mon">【每】【个】?【月】【的】?【day】【日】【的】?(【period】【的】?)?【hour】【时】【minute】【分】?【到】(【otherPeriod】【的】?)?【otherHour】【时】【otherMinute】【分】?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","date":["****-**-@day,****-**-@day"],"time":["@hour:@minute:00,@otherHour:@otherMinute:00"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_MONTH">
+        <example>每月</example>
+        <pattern level="Mon">【每】【个】?【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","repeat_level":"month"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_MONTH_RANGE_MONTH_RANGE2">
+        <example>8月到9月</example>
+        <pattern level="Mon">【从】?(【month】|【range】)【月】【到】(【otherMonth】|【otherRange】)【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@month-01,@nowYear-@otherMonth-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_RANGE_MONTH_RANGE_MONTH_RANGE2_1">
+        <example>8月初到9月初</example>
+        <pattern level="Mon">【从】?(【month】|【range】)【月】+【初】(【period】【的】?)?(【hour】【时】【的】?)?(【minute】【分】?【的】?)?(【second】【秒】?)?【到】(【otherMonth】|【otherRange】)【月】+【初】(【otherPeriod】【的】?)?(【otherHour】【时】【的】?)?(【otherMinute】【分】?【的】?)?(【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@month-01,@nowYear-@otherMonth-01"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_RANGE_MONTH_RANGE_MONTH_RANGE2_FUZZY_0">
+        <example>8月末到9月末</example>
+        <pattern level="Mon">【从】?(【month】|【range】)【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherMonth】|【otherRange】)【月】+【底】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@month-@relativeDays,@nowYear-@otherMonth-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_MONTH_RANGE_MONTH_RANGE2_FUZZY_1">
+        <example>8月初到9月末</example>
+        <pattern level="Mon">【从】?(【month】|【range】)【月】+【初】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherMonth】|【otherRange】)【月】+【底】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@month-01,@nowYear-@otherMonth-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_MONTH_RANGE_MONTH_RANGE2_FUZZY_2">
+        <example>8月末到9月初</example>
+        <pattern level="Mon">【从】?(【month】|【range】)【月】+【底】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherMonth】|【otherRange】)【月】+【初】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@month-@relativeDays,@nowYear-@otherMonth-01"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_MONTH_RANGE_MONTH_LUNAR">
+        <example>农历8月到9月</example>
+        <pattern level="Mon">【从】?【农历】【的】?(【month】|【range】)【月】【到】(【农历】【的】?)?(【otherMonth】|【otherRange】)【月】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","lunar":["@nowYear-@month-01,@nowYear-@otherMonth-@relativeDays"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_DAY_RANGE_DAY_RANGE2">
+        <example>8月3号到9月3号</example>
+        <pattern level="Mon">【从】?((【month】|【range】)【月】【的】?)【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherMonth】|【otherRange】)【月】【的】?)?【otherDay】【日】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Mon">【从】?((【month】|【range】)【月】【的】?)?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherMonth】|【otherRange】)【月】【的】?)【otherDay】【日】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@month-@day,@nowYear-@otherMonth-@otherDay"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_MONTH_DAY_RANGE_DAY_RANGE2_1">
+        <example>8月3号上午到下午</example>
+        <pattern level="Mon">【从】?((【month】|【range】)【月】【的】?)【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherMonth】|【otherRange】)【月】【的】?)?(【otherDay】【日】)?(【的】?【otherPeriod】)(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Mon">【从】?((【month】|【range】)【月】【的】?)【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherMonth】|【otherRange】)【月】【的】?)?(【otherDay】【日】)?(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Mon">【从】?((【month】|【range】)【月】【的】?)【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】((【otherMonth】|【otherRange】)【月】【的】?)?(【otherDay】【日】)?(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】)(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@month-@day,@nowYear-@otherMonth-@otherDay"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_DAY_RANGE_DAY_RANGE2_LUNAR">
+        <example>农历8号到9号</example>
+        <pattern level="Mon">【从】?【农历】【的】?(【month】|【range】)【月】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【农历】【的】?)?((【otherMonth】|【otherRange】)【月】【的】?)?【otherDay】【日】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Mon">【从】?【农历】【的】?((【month】|【range】)【月】【的】?)?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【农历】【的】?)?(【otherMonth】|【otherRange】)【月】【的】?【otherDay】【日】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","lunar":["@nowYear-@month-@day,@nowYear-@otherMonth-@otherDay"],"range":["0 @range 0 0 0 0 0 0,0 @otherRange 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <!--################################### 以周开头 ###################################-->
+    <template id="TIME_WEEK">
+        <example>这周三</example>
+        <pattern level="Week">【range】?【周】+【week】(【的】?【period】)?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【second】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","week":["@week,@week"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @range 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_WEEK_24">
+        <example>这周三</example>
+        <pattern level="Week">【range】?【周】+【week】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","week":["@week,@week"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @range 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_WEEK_ERROR">
+        <example>这周八</example>
+        <pattern level="Week_Error">【range】?【周】+【errorWeek】(【的】?【period】)?(【的】?【errorNum】【时】(【的】?【errorNum】【分】?)?(【errorNum】【秒】?)?)?</pattern>
+        <pattern level="Week_Error">【range】?【周】【的】?【period】</pattern>
+        <pattern level="Week_Error">【range】?【周】(【的】?【period】)?(【的】?【errorNum】【时】(【的】?【errorNum】【分】?)?(【errorNum】【秒】?)?)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_WEEK">
+        <example>这周</example>
+        <pattern level="Week">【range】【周】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","week":["1,7"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @range 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_NUMBER_WEEK_SIGN">
+        <example>3周前</example>
+        <pattern level="Week">【number】【周】【sign】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @sign@number*7 0 0 0 0 0,0 0 @sign@number*7 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_WEEK_SIGN_LATER">
+        <example>再过3周</example>
+        <pattern level="Week">【再过】【number】【周】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @number*7 0 0 0 0 0,0 0 @number*7 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_POINT_NUMBER_WEEK_INCLUDE">
+        <example>3周之内</example>
+        <pattern level="Week">【最近】?【number】【周】【之内】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","week":["@nowWeek,7"],"range":["0 0 0 0 0 0 0 0,0 0 0 (@number-1) 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+   
+    <template id="TIME_POINT_NUMBER_WEEK_FUTURE">
+        <example>未来3周</example>
+        <pattern level="Week">(【未来】|【最近】)【number】【个】?【周】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 0 0 0 0 0 0,0 0 @number*7 0 0 0 0 0"],"time":["@nowHour:@nowMinute:@nowSecond,23:59:59"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK">
+        <example>每周</example>
+        <pattern level="Week">【每】【周】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","repeat_level":"week"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_TIME_POINT_ERROR">
+        <example>每周八点</example>
+        <pattern level="Week_Error">【每】【周】(【的】?【period】)?(【的】?【errorNum】【时】)(【errorNum】【分】)?(【errorNum】【秒】)?</pattern>
+        <pattern level="Week_Error">【每】【周】【errorWeek】(【的】?【period】)?(【的】?【errorNum】【时】)(【errorNum】【分】)?(【errorNum】【秒】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_EXACT">
+        <example>每周三</example>
+        <pattern level="Week">【每】【周】+【week】(【和】?【每】?【周】+【otherWeek】)?(【的】?【period】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@week","@otherWeek,@otherWeek"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_WEEK2">
+        <example>每周三到周五</example>
+        <pattern level="Week">【每】【周】+【week】【到】【每】?【周】+【otherWeek】【的】?【period】?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@otherWeek"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_DAYS">
+        <example>每周工作日上午九点</example>
+        <pattern level="Week">【每】【周】+【week】【到】【每】?【周】+【otherWeek】(【的】?【period】)?(【的】?【hour】【时】(【minute】【分】)?(【second】【秒】)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@otherWeek"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_HOUR">
+        <example>每周三8点</example>
+        <pattern level="Week">【每】【周】+【week】【的】?(【和】?【每】?【周】+【otherWeek】)?【的】?(【period】【的】?)?【hour】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@week","@otherWeek,@otherWeek"],"time":["@hour:00:00,@hour:00:00"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_HOUR_MINUTE">
+        <example>每周三8点30分</example>
+        <pattern level="Week">【每】【周】+【week】【的】?(【和】?【每】?【周】+【otherWeek】)?【的】?(【period】【的】?)?【hour】【时】【minute】【分】?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@week","@otherWeek,@otherWeek"],"time":["@hour:@minute:00,@hour:@minute:00"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_HOUR_MINUTE_SECOND">
+        <example>每周三8点30分4秒</example>
+        <pattern level="Week">【每】【周】+【week】【的】?(【和】?【每】?【周】+【otherWeek】)?【的】?(【period】【的】?)?【hour】【时】【minute】【分】【second】【秒】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@week","@otherWeek,@otherWeek"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_HOUR_HOUR2">
+        <example>每周三8点到9点</example>
+        <pattern level="Week">【每】【周】+【week】【的】?【hour】【时】【到】【otherHour】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@week"],"time":["@hour:00:00,@otherHour:00:00"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_HOUR_MINUTE_HOUR2_MINUTE2">
+        <example>每周三8点30到9点40</example>
+        <pattern level="Week">【每】【周】+【week】【的】?【hour】【时】【minute】【分】?【到】【otherHour】【时】【otherMinute】【分】?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@week"],"time":["@hour:@minute:00,@otherHour:@otherMinute:00"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_RANGE">
+        <example>周二到周三</example>
+        <pattern level="Week">【从】?【周】+【week】【到】【周】+【otherWeek】(【的】?【period】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@otherWeek"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_WEEK_RANGE_HOUR">
+        <example>周二到周三下午三点</example>
+        <pattern level="Week">【从】?【周】+【week】【到】【周】+【otherWeek】(【的】?【period】)?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【second】【秒】?)?)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","week":["@week,@otherWeek"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_WEEK_RANGE_WEEK_RANGE2_PERIOD">
+        <example>这周到下周</example>
+        <pattern level="Week">【从】?【range】【周】+【到】【otherRange】【周】+</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","week":["1,7"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @otherRange 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_WEEK_RANGE_WEEK_RANGE1_PERIOD">
+        <example>这周3上午到下周三下午</example>
+            <pattern level="Week">【从】?【range】【周】+【week】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherRange】?【周】+【otherWeek】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherRange】【周】+【otherWeek】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","week":["@week,@otherWeek"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @otherRange 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_WEEK_RANGE_WEEK_RANGE2_PERIOD">
+        <example>这周3上午到下周四下午</example>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherRange】?【周】+【otherWeek】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","week":["@week,@otherWeek"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @otherRange 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_WEEK_RANGE_WEEK_RANGE3_PERIOD">
+        <example>这周三8点到下周四10点</example>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherRange】?【周】+【otherWeek】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherRange】?【周】+【otherWeek】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherRange】?【周】+【otherWeek】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】)?(【的】?【otherSecond】【秒】?)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","week":["@week,@otherWeek"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @otherRange 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_WEEK_RANGE_WEEK_RANGE4_PERIOD">
+        <example>这周3上午到下午</example>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","week":["@week,@week"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @otherRange 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_WEEK_RANGE_WEEK_RANGE5_PERIOD">
+        <example>这周三8点到10点</example>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Week">【从】?【range】?【周】+【week】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】)?(【的】?【otherSecond】【秒】?)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","week":["@week,@week"],"range":["0 0 0 @range 0 0 0 0,0 0 0 @otherRange 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <!--################################### 以日开头 ###################################-->
+    <template id="TIME_DAY">
+        <example>3号</example>
+        <pattern level="Day">【day】【日】(【的】?【period】)?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【second】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@day,@nowYear-@nowMonth-@day"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_DAY_24">
+        <example>3号</example>
+        <pattern level="Day">【day】【日】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@day,@nowYear-@nowMonth-@day"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LUNAR_DAY">
+        <example>初3</example>
+        <pattern level="Day">【农历】?【的】?【初】【day】(【的】?【period】)?(【的】?【hour】【时】(【minute】【分】?)?(【second】【秒】?)?)?</pattern>
+        <pattern level="Day">【农历】【的】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】(【minute】【分】?)?(【second】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@nowYear-@nowMonth-@day,@nowYear-@nowMonth-@day"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LUNAR_DAY_24">
+        <example>初3</example>
+        <pattern level="Day">【农历】?【的】?【初】【day】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <pattern level="Day">【农历】【的】?【day】【日】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","lunar":["@nowYear-@nowMonth-@day,@nowYear-@nowMonth-@day"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_RANGE_DAY">
+        <example>今天</example>
+        <pattern level="Day">【range】【天】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @range 0 0 0 0 0,0 0 @range 0 0 0 0 0"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_DAY_24">
+        <example>今天</example>
+        <pattern level="Day">【range】【天】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @range 0 0 0 0 0,0 0 @range 0 0 0 0 0"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_DAY_ERROR">
+        <example>33号25点</example>
+        <pattern level="Day_Error">(【errorNum】【日】|【range】【天】)(【的】?【period】)?(【的】?【errorNum】【时】(【的】?【errorNum】【分】?)?(【的】?【errorNum】【秒】?)?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LUNAR_DAY_ERROR">
+        <example>农历初33</example>
+        <pattern level="Day_Error">(【农历】?【的】?【初】【errorNum】|【农历】【的】?【errorNum】【日】)(【的】?【period】)?(【的】?【errorNum】【时】)?(【的】?【errorNum】【分】?)?(【的】?【errorNum】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_DAY_SIGN">
+        <example>3天前</example>
+        <pattern level="Day">【number】【天】【sign】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @sign@number 0 0 0 0 0,0 0 @sign@number 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_DAY_HOUR_SIGN">
+        <example>1天23小时前</example>
+        <pattern level="Day">【number】【天】【otherNumber】【点钟】【sign】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 0 0 0 @sign@number*24+@otherNumber 0 0,0 0 0 0 0 @sign@number*24+@otherNumber 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_DAY_SIGN_LATER">
+        <example>再过3天</example>
+        <pattern level="Day">【再过】【number】【天】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @number 0 0 0 0 0,0 0 @number 0 0 0 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_POINT_NUMBER_DAY_FUTURE">
+        <example>未来3天</example>
+        <pattern level="Day">(【未来】|【最近】)【number】【天】</pattern>
+        <pattern level="Day">【最近】?【number】【天】【之内】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 0 0 0 0 0 0,0 0 @number 0 0 0 0 0"],"time":["@nowHour:@nowMinute:@nowSecond,23:59:59"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_DAY">
+        <example>每天</example>
+        <pattern level="Day">【每】【天】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","time":["00:00:00,23:59:59"],"repeat_level":"day"}]]>
+        </semantic>
+    </template>
+
+
+    <template id="TIME_LOOP_DAY_PERIOD">
+        <example>每天上午</example>
+        <pattern level="Day">【每】【天】【的】?【period】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_HOUR_MINUTE_SECOND">
+        <example>每天8点30分40秒</example>
+        <pattern level="Day">【每】【天】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【second】【秒】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_DAYS">
+        <example>每隔3天上午8点</example>
+        <pattern level="Day">【每】【隔】?【number】【天】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【second】【秒】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"],"days":["@number"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_HOUR_MINUTE_SECOND_24">
+        <example>每天8点30分40秒</example>
+        <pattern level="Day">【每】【天】(【的】?【period】)?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_HOUR_HOUR2">
+        <example>每天8点到9点</example>
+        <pattern level="Day">【每】【天】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】【otherPeriod】?(【的】?【otherHour】【时】)(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_HOUR_MINUTE_SECOND_MINUTE2_SECOND2">
+        <example>每天8点30分20秒到40分30秒</example>
+        <pattern level="Day">【每】【天】【hour】【时】【minute】【分】(【second】【秒】)?【到】【otherMinute】【分】(【otherSecond】【秒】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","time":["@hour:@minute:@second,@hour:@otherMinute:@otherSecond"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_LOOP_HOUR_MINUTE_SECOND_SECOND2">
+        <example>每天8点30分20秒到30秒</example>
+        <pattern level="Day">【每】【天】【hour】【时】【minute】【分】【second】【秒】【到】【otherSecond】【秒】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","time":["@hour:@minute:@second,@hour:@minute:@otherSecond"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_DAY_RANGE_DAY_RANGE1_1">
+        <example>8号上午到九号</example>
+        <pattern level="Day">【从】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherDay】【日】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@nowMonth-@day,@nowYear-@nowMonth-@otherDay"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+   
+    <template id="TIME_RANGE_DAY_RANGE_DAY_RANGE1_2">
+        <example>8号上午到下午</example>
+        <pattern level="Day">【从】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】【otherPeriod】(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Day">【从】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherPeriod】【的】?)?(【otherHour】【时】)(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Day">【从】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【second】【秒】?)?【到】【otherPeriod】?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】)(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Day">【从】?【day】【日】(【的】?【period】)?(【的】?【hour】【时】)?(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】【otherPeriod】?(【的】?【otherHour】【时】)?(【的】?【otherMinute】【分】)?(【的】?【otherSecond】【秒】)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@nowMonth-@day,@nowYear-@nowMonth-@day"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_DAY_RANGE_RANGE1_1">
+        <example>今天到明天</example>
+        <pattern level="Day">【从】?【range】【天】(【的】?【period】)?((【的】?【hour】【时】)(【的】?【minute】【分】?)?(【second】【秒】?)?)?【到】【otherRange】【天】(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)?(【otherMinute】【分】?【的】?)?(【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @range 0 0 0 0 0,0 0 @otherRange 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_DAY_RANGE_RANGE2_1">
+        <example>今天8点到9点</example>
+        <pattern level="Day">【从】?【range】【天】(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherRange】【天】)?(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <pattern level="Day">【从】?(【range】【天】)?(【的】?【period】)?(【的】?【hour】【时】)(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?【到】(【otherRange】【天】)(【的】?【otherPeriod】)?(【的】?【otherHour】【时】)(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @range 0 0 0 0 0,0 0 @otherRange 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_DAY_1">
+        <example>今天</example>
+        <pattern level="Day">【从】?(【range】【天】【的】?)?【period】(【的】?【hour】【时】(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?)?【到】(【otherRange】【天】【的】?)?【otherPeriod】(【的】?【otherHour】【时】(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?)?</pattern>
+        <pattern level="Day">【从】?(【range】【天】【的】?)?【period】(【的】?【hour】【时】(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?)?【到】(【otherRange】【天】【的】?)?(【otherPeriod】【的】?)?【otherHour】【时】(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 @range 0 0 0 0 0,0 0 @otherRange 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <!--################################### 以小时开头 ###################################-->
+    <template id="TIME_LOOP_HOUR">
+        <example>每小时</example>
+        <pattern level="Hour">【每】【个】?【小时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","repeat_level":"hour"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_HOUR">
+        <example>上午8点</example>
+        <pattern level="Hour">【period】?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【的】?【second】【秒】?)?)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@hour:@minute:@second,@hour:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_HOUR_24">
+        <example>上午8点</example>
+        <pattern level="Hour">【period】?【的】?【hour_24】【时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@hour_24:@minute:@second,@hour_24:@minute:@second"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+    <template id="TIME_HOUR_ERROR">
+        <example>上午25点</example>
+        <pattern level="Error">【period】?(【的】?【errorNum】【时】(【的】?【errorNum】【分】?)?(【的】?【errorNum】【秒】?)?)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_error"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_HOUR_SIGN">
+        <example>3小时前</example>
+        <pattern level="Hour">【number】【个】?【点钟】(【minute】【分】?)?(【second】【秒】?)?【sign】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 @sign@number @sign@minute @sign@second,0 0 0 0 0 @sign@number @sign@minute @sign@second"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_HOUR_SIGN_LATER">
+        <example>再过3小时</example>
+        <pattern level="Hour">【再过】【number】【个】?【小时】(【minute】【分】)?(【second】【秒】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 @number @minute @second,0 0 0 0 0 @number @minute @second"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_POINT_NUMBER_HOUR_INCLUDE">
+        <example>3小时之内</example>
+        <pattern level="Hour">【number】【个】?【小时】【之内】</pattern>
+        <pattern level="Hour">【最近】【number】【个】?【小时】【之内】?</pattern>
+        <pattern level="Hour">【未来】【number】【个】?【小时】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 @number 0 0"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_HOUR_RANGE_HOUR_RANGE2">
+        <example>8点40分32秒到50秒</example>
+        <pattern level="Hour">【从】?【period】?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【second】【秒】?)?)【到】【otherPeriod】?(【的】?【otherHour】【时】(【的】?【otherMinute】【分】?)?(【的】?【otherSecond】【秒】?)?)</pattern>
+        <pattern level="Hour">【从】?【period】?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【second】【秒】?)?)【到】(【otherPeriod】?【的】?【otherHour】【时】)?(【otherMinute】【分】【的】?)(【otherSecond】【秒】?)?</pattern>
+        <pattern level="Hour">【从】?【period】?(【的】?【hour】【时】(【的】?【minute】【分】?)?(【second】【秒】?)?)【到】(【otherPeriod】【的】?)?(【otherHour】【时】【的】?)?(【otherMinute】【分】【的】?)?(【otherSecond】【秒】)</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 0"],"time":["@hour:@minute:@second,@otherHour:@otherMinute:@otherSecond"],"period":["@period,@otherPeriod"]}]]>
+        </semantic>
+    </template>
+
+    <!--################################### 以分钟开头 ###################################-->
+    <template id="TIME_LOOP_MINUTE">
+        <example>每分钟</example>
+        <pattern level="Min">【每】【分钟】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","repeat_level":"minute"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_MINUTE_SIGN">
+        <example>3分钟前</example>
+        <pattern level="Min">【number】【分】(【second】?【秒】)?【sign】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 0 @sign@number @sign@second,0 0 0 0 0 0 @sign@number @sign@second"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_MINUTE_SIGN_LATER">
+        <example>再过3分钟</example>
+        <pattern level="Min">【再过】?【number】【分】(【second】【秒】)?</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 0 @number @second,0 0 0 0 0 0 @number @second"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_POINT_NUMBER_MINUTE_INCLUDE">
+        <example>3分钟之内</example>
+        <pattern level="Min">【number】【分】【之内】</pattern>
+        <pattern level="Min">【最近】【number】【分】【之内】?</pattern>
+        <pattern level="Min">【未来】【number】【分】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 @number 0"]}]]>
+        </semantic>
+    </template>
+
+    <!--################################### 以秒开头 ###################################-->
+    <template id="TIME_LOOP_SECOND">
+        <example>每秒钟</example>
+        <pattern level="Sec">【每】【秒钟】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_loop","repeat_level":"second"}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_SECOND_SIGN">
+        <example>3秒前</example>
+        <pattern level="Sec">【number】【秒】【sign】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 0 0 @sign@number,0 0 0 0 0 0 0 @sign@number"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_NUMBER_SECOND_SIGN_LATER">
+        <example>再过3秒</example>
+        <pattern level="Sec">【number】【秒】</pattern>
+        <pattern level="Sec">【再过】【number】【秒】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 0 0 @number,0 0 0 0 0 0 0 @number"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_POINT_NUMBER_SECOND_INCLUDE">
+        <example>3秒之内</example>
+        <pattern level="Sec">【number】【秒】【之内】</pattern>
+        <pattern level="Sec">【最近】【number】【秒】【之内】?</pattern>
+        <pattern level="Sec">【未来】【number】【秒】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 @number"]}]]>
+        </semantic>
+    </template>
+
+        <!--################################### 其他 ###################################-->
+    <template id="TIME_POINT_NOW">
+        <example>现在</example>
+        <pattern level="Other">【nowtime】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_range","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"range":["0 0 0 0 0 0 0 0,0 0 0 0 0 0 0 0"],"time":["@nowHour:@nowMinute:@nowSecond,@nowHour:@nowMinute:@nowSecond"]}]]>
+        </semantic>
+    </template>
+
+    <template id="TIME_RANGE_PERIOD">
+        <example>上午</example>
+        <pattern level="Other">【period】</pattern>
+        <semantic>
+            <![CDATA[{"type":"time_point","date":["@nowYear-@nowMonth-@nowDay,@nowYear-@nowMonth-@nowDay"],"period":["@period,@period"]}]]>
+        </semantic>
+    </template>
+
+</templates>

@@ -1,0 +1,2 @@
+on boot
+    setprop com.ss.android.article.news tt_lenovo2025_1080_yz1

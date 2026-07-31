@@ -1,0 +1,51 @@
+{
+	"BertClassification": {
+		"DictPath": {
+			"ClassFile": "resource/BertClassification/class.txt",
+			"ClassFileTree": "resource/BertClassification/prior_class_tree.txt"
+		},
+		"ModelPath": {
+			"ClassificationModel": "resource/BertClassification/class_model.onnx"
+		}
+	},
+	"TrafficBertCrfNer": {
+		"DictPath": {
+			"Label": "resource/BertCRFNER/traffic/id2label.json"
+		},
+		"ModelPath": {
+			"BertModel": "resource/BertCRFNER/traffic/bert.onnx",
+			"CrfModel": "resource/BertCRFNER/traffic/crf.onnx"
+		}
+	},
+	"DisBertCrfNer": {
+		"DictPath": {
+			"Label": "resource/BertCRFNER/dis/id2label.json"
+		},
+		"ModelPath": {
+			"BertModel": "resource/BertCRFNER/dis/bert.onnx",
+			"CrfModel": "resource/BertCRFNER/dis/crf.onnx"
+		}
+	},
+	"BillBertCrfNer": {
+		"DictPath": {
+			"Label": "resource/BertCRFNER/bill/id2label.json"
+		},
+		"ModelPath": {
+			"BertModel": "resource/BertCRFNER/bill/bert.onnx",
+			"CrfModel": "resource/BertCRFNER/bill/crf.onnx"
+		}
+	},
+	"Tokenizer": {
+		"DictPath": {
+			"Vocab": "utils/tokenizer/vocab.txt"
+		},
+		"ModelPath": {
+			"Tokenizer": "utils/tokenizer/tokenizer.ckpt"
+		}
+	},
+	"NluModelModule": {
+		"StationList": "resource/NluModelModule/StationsList.txt",
+		"ThirdPartyList": "resource/NluModelModule/ThirdPartyList.txt",
+		"AntLmModel": "resource/NluModelModule/AntLmModel.gguf"
+	}
+}
