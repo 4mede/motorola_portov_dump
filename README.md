@@ -1,0 +1,14 @@
+# user 16 VVT35HV-W1-51-ST27.7 85495c release-keys
+- manufacturer: motorola
+- platform: parrot
+- codename: portov
+- flavor: user
+- release: 16
+- id: VVT35HV-W1-51-ST27.7
+- incremental: 85495c
+- tags: release-keys
+- fingerprint: motorola/portov_cn/portov:15/VVT35HV-W1-51-ST27.7/85495c:user/release-keys
+- is_ab: true
+- brand: motorola
+- branch: user-16-VVT35HV-W1-51-ST27.7-85495c-release-keys
+- repo: motorola_portov_dump
