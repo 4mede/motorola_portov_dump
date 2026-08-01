@@ -1,0 +1,32 @@
+####################################
+# from generate-common-build-props
+# These properties identify this partition image.
+####################################
+ro.product.odm.brand=motorola
+ro.product.odm.device=portov
+ro.product.odm.manufacturer=motorola
+ro.product.odm.model=portov
+ro.product.odm.name=portov
+ro.odm.product.cpu.abilist=arm64-v8a
+ro.odm.product.cpu.abilist32=
+ro.odm.product.cpu.abilist64=arm64-v8a
+ro.odm.build.date=Mon Jul  6 19:33:50 UTC 2026
+ro.odm.build.date.utc=1783366430
+ro.odm.build.fingerprint=motorola/portov/portov:15/VVTS35HV-W1-ST20.2/e5c56a:user/release-keys
+ro.odm.build.id=VVTS35HV-W1-ST20.2
+ro.odm.build.tags=release-keys
+ro.odm.build.type=user
+ro.odm.build.version.incremental=e5c56a
+ro.odm.build.version.release=15
+ro.odm.build.version.release_or_codename=15
+ro.odm.build.version.sdk=35
+####################################
+# from variable ADDITIONAL_ODM_PROPERTIES
+####################################
+ro.vendor.qti.va_odm.support=1
+####################################
+# from variable PRODUCT_ODM_PROPERTIES
+####################################
+ro.odm.build.media_performance_class=0
+# end of file
+
