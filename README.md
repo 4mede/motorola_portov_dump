@@ -1,0 +1,14 @@
+# user 16 VVTS35HV-W1-ST20.2 e5c56a release-keys
+- manufacturer: motorola
+- platform: parrot
+- codename: portov
+- flavor: user
+- release: 16
+- id: VVTS35HV-W1-ST20.2
+- incremental: e5c56a
+- tags: release-keys
+- fingerprint: motorola/portov/portov:15/VVTS35HV-W1-ST20.2/e5c56a:user/release-keys
+- is_ab: true
+- brand: motorola
+- branch: user-16-VVTS35HV-W1-ST20.2-e5c56a-release-keys
+- repo: motorola_portov_dump
