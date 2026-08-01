@@ -1,0 +1,4 @@
+service MDNonsleep_Report /vendor/bin/MDNonsleep_Report
+    class main
+    user system
+    group system radio inet diag
